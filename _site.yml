@@ -1,8 +1,10 @@
-name: "my-website"
+name: "IMAGE"
 navbar:
-  title: "My Website"
+  title: "IMAGE"
   left:
-    - text: "Home"
-      href: index.html
     - text: "About"
       href: about.html
+    - text: "Experiments"
+      href: index.html
+    - text: "Installation"
+      href: install.html
