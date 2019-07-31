@@ -5,7 +5,7 @@ navbar:
     - text: "About"
       href: about.html
     - text: "Experiments"
-      href: index.html
+      href: experiments.html
     - text: "Installation"
       href: install.html
       output:
