@@ -9,7 +9,7 @@ navbar:
     - text: "Installation"
       href: install.html
 output:
-  html_document:
+  github_document:
   prettydoc::html_pretty:
     theme: cayman
     highlight: github
