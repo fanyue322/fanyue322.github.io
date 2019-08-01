@@ -1,8 +1,6 @@
 ---
 title: "Installation"
-output: 
-  html_document: 
-    theme: cosmo
+output: html_document
 
 ---
 
@@ -13,11 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 IMAGE is implemented as an R package, which can be installed from either GitHub or CRAN.
 
 # 1. Install from GitHub
-```{r}
+```
 library(devtools)
 install_github("3211895/IMAGE")
 ```
 # 2. Install from CRAN
-```{r}
+```
 install.packages('IMAGE')
 ```
