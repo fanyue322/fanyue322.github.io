@@ -1,9 +1,9 @@
 ---
 title: "About"
-output:
-  prettydoc::html_pretty:
-    theme: cayman
-    highlight: github
+output: html_document
+ # prettydoc::html_pretty:
+ #   theme: cayman
+ #   highlight: github
 ---
 
 IMAGE is implemented as an open source R package for mQTL mapping in sequencing-based methylation studies. IMAGE properly accounts for the count nature of bisulfite sequencing data and incorporates allele-specific methylation patterns from heterozygous individuals to enable more powerful mQTL discovery. 
