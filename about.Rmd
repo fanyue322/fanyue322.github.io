@@ -3,7 +3,6 @@ title: "About"
 output: 
   html_document: 
     theme: cosmo
-    toc: yes
 ---
 
 ```{r setup, include=FALSE}
