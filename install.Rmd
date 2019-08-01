@@ -1,12 +1,10 @@
 ---
 title: "Installation"
-output: html_document
-
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 IMAGE is implemented as an R package, which can be installed from either GitHub or CRAN.
 
