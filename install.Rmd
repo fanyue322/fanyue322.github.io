@@ -1,6 +1,6 @@
 ---
 title: "Installation"
-output: github_document
+output: html_document
  # prettydoc::html_pretty:
 #    theme: cayman
 #    highlight: github
