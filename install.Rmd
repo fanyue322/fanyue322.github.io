@@ -1,6 +1,9 @@
 ---
 title: "Installation"
-output: html_document
+output: 
+  html_document: 
+    theme: cosmo
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
