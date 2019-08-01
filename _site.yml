@@ -8,3 +8,6 @@ navbar:
       href: index.html
     - text: "Installation"
       href: install.html
+output:
+      html_document:
+      theme: cosmo
