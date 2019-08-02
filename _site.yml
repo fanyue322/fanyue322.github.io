@@ -11,7 +11,7 @@ navbar:
 output:
   html_document:
   prettydoc::html_pretty:
-    theme: jekyll-theme-cayman
+    theme: cayman
     highlight: github
     include:
       after_body: footer.html
