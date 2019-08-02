@@ -43,4 +43,11 @@ K = matrix(runif(25,-0.1,0.1), nrow = 5, ncol = 5)
 
 res=image(geno,data,K)
 ```
-
+To normalize the pvalues:
+```
+p<-res[,5]
+chisq <- qchisq(1-p,1)
+lambda=median(chisq)/qchisq(0.5,1)
+chisq=chisq/lambda
+pvalue=pchisq( chisq, 1, lower.tail = F)
+```

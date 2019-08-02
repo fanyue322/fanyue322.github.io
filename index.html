@@ -72,6 +72,12 @@ data$y2 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
 K = matrix(runif(25,-0.1,0.1), nrow = 5, ncol = 5)
 
 res=image(geno,data,K)</code></pre>
+<p>To normalize the pvalues:</p>
+<pre><code>p&lt;-res[,5]
+chisq &lt;- qchisq(1-p,1)
+lambda=median(chisq)/qchisq(0.5,1)
+chisq=chisq/lambda
+pvalue=pchisq( chisq, 1, lower.tail = F)</code></pre>
 </div>
 </section>
 
