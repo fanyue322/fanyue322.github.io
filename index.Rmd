@@ -6,66 +6,41 @@ output: html_document
   #  highlight: github
 ---
 
-#####Code for experiments
+##Code for experiments
 [Simulation](https://github.com/fanyue322/IMAGEreproduce)
 
 [Real data](https://github.com/fanyue322/IMAGEreproduce/tree/master/Realdata)
 
-## A New Output Format
+##Example
+```
+data(ExampleData)
+geno <- ExampleData$geno
+K <- ExampleData$K
+data <- ExampleData$data
+res=image(geno,data,K)
+```
+An example of the outputs IMAGE produces:
+```
+data(example_results)
+```
+A toy example for testing purposes only:
+```
+geno <- list()
+geno$hap1 = matrix(sample(c(0,1),25, replace = TRUE, prob = c(0.6,0.4)),
+                    nrow = 5, ncol = 5)
+geno$hap2 = matrix(sample(c(0,1),25, replace = TRUE, prob = c(0.6,0.4)),
+                    nrow = 5, ncol = 5)
 
-`html_pretty` in the [**prettydoc**](https://github.com/yixuan/prettydoc/)
-package is a new output format for creating HTML documents from R Markdown files.
-`html_pretty` is more lightweight compared to `html_document`, and is more
-stylish than `html_vignette` when creating package vignettes.
+data <- list()
+data$r = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$y = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$r1 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$r2 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$y1 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$y2 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
 
-## New Styles
+K = matrix(runif(25,-0.1,0.1), nrow = 5, ncol = 5)
 
-`html_pretty` currently supports three page themes (`cayman`, `tactile` and
-`architect`), and two syntax highlight styles (`github` and `vignette`).
-The theme and highlight styles can be specified in the document metadata,
-for example:
-
-```yaml
-output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+res=image(geno,data,K)
 ```
 
-## Your Familiar Tools
-
-Feel free to use the `knitr` infrastructure with dozens of tunable options in
-your document.
-
-```{r fig.width=6, fig.height=6, fig.align='center'}
-set.seed(123)
-n <- 1000
-x1  <- matrix(rnorm(n), ncol = 2)
-x2  <- matrix(rnorm(n, mean = 3, sd = 1.5), ncol = 2)
-x   <- rbind(x1, x2)
-head(x)
-smoothScatter(x, xlab = "x1", ylab = "x2")
-```
-
-You can include code snippets of languages other than R, but note that
-the block header has no curly brackets around the language name.
-
-```cpp
-// [[Rcpp::export]]
-NumericVector timesTwo(NumericVector x) {
-    return x * 2;
-}
-```
-
-You can also write math expressions, e.g. $Y = X\beta + \epsilon$,
-footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(iris, 10))
-```
-
-## Stay Tuned
-
-Please visit the [development page](https://github.com/yixuan/prettydoc/) of the 
-`prettydoc` package for latest updates and news. Comments, bug reports and
-pull requests are always welcome.
