@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>Experiments</title>
+
+
+
+
+
+
+<link rel="stylesheet" href="index_files/style.css" type="text/css" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<section class="page-header">
+<h1 class="title toc-ignore project-name">Experiments</h1>
+</section>
+
+
+
+<section class="main-content">
+<div id="code-for-experiments" class="section level2">
+<h2>Code for experiments</h2>
+<p><a href="https://github.com/fanyue322/IMAGEreproduce">Simulation</a></p>
+<p><a href="https://github.com/fanyue322/IMAGEreproduce/tree/master/Realdata">Real data</a></p>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<pre><code>data(ExampleData)
+geno &lt;- ExampleData$geno
+K &lt;- ExampleData$K
+data &lt;- ExampleData$data
+res=image(geno,data,K)</code></pre>
+<p>An example of the outputs IMAGE produces:</p>
+<pre><code>data(example_results)</code></pre>
+<p>A toy example for testing purposes only:</p>
+<pre><code>geno &lt;- list()
+geno$hap1 = matrix(sample(c(0,1),25, replace = TRUE, prob = c(0.6,0.4)),
+                    nrow = 5, ncol = 5)
+geno$hap2 = matrix(sample(c(0,1),25, replace = TRUE, prob = c(0.6,0.4)),
+                    nrow = 5, ncol = 5)
+
+data &lt;- list()
+data$r = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$y = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$r1 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$r2 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$y1 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+data$y2 = matrix(sample(0:50,25, replace = TRUE), nrow = 5, ncol = 5)
+
+K = matrix(runif(25,-0.1,0.1), nrow = 5, ncol = 5)
+
+res=image(geno,data,K)</code></pre>
+</div>
+</section>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
