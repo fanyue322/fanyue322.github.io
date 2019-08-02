@@ -10,9 +10,9 @@ navbar:
       href: install.html
 output:
   html_document:
- # prettydoc::html_pretty:
-    theme: cosmo
-    highlight: textmate
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
     include:
       after_body: footer.html
     css: styles.css
