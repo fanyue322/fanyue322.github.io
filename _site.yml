@@ -14,5 +14,5 @@ output:
     theme: cayman
     highlight: github
     include:
-      after_body: footer.html
+    after_body: footer.html
     css: styles.css

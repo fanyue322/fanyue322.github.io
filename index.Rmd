@@ -1,9 +1,9 @@
 ---
 title: "Experiments"
 output: html_document
- # prettydoc::html_pretty:
- #   theme: cayman
- #   highlight: github
+  #prettydoc::html_pretty:
+  #  theme: cayman
+  #  highlight: github
 ---
 
 #####Code for experiments
