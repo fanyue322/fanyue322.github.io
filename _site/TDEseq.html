@@ -151,7 +151,7 @@ library(TDEseq)</code></pre>
 </div>
 <div id="loading-data" class="section level3">
 <h3>Loading data</h3>
-<p>We used a sample 151673 in DLPFC data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://drive.google.com/file/d/1354UjYPgx492l8rxjPvW8UB0LRPjD0tR/view?usp=sharing">here</a>.</p>
+<p>We used a sample 151673 in DLPFC data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://drive.google.com/drive/folders/1YKYLGeoZYZO0EBIzzoa3PBPSx-4UgXkr">here</a>.</p>
 <pre class="lib"><code>load(&#39;GSE90047.rda&#39;)
 time=seurat@meta.data$stage
 expData=seurat@assays$RNA@data</code></pre>
@@ -167,7 +167,7 @@ res=TDEseq(expData,time,group=group,LMM=TRUE)</code></pre>
 <div id="including-covariates" class="section level3">
 <h3>Including covariates</h3>
 <p>TDEseq also supports the inclusion of covariates in DE analysis. For example, the pseudotime for each cell.</p>
-<pre class="lib"><code>res=TDEseq(expData,time,group=group,zmat=pseudotime,LMM=TRUE)</code></pre>
+<pre class="lib"><code>res=TDEseq(expData,time,group=group,z=pseudotime,LMM=TRUE)</code></pre>
 </div>
 </div>
 </section>
