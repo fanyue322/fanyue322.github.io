@@ -15,5 +15,5 @@ install_github("3211895/IMAGE")
 ```
 # 2. Install from CRAN
 ```
-install.packages('IMAGE')
+install.packages('123IMAGE')
 ```
