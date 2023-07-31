@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Fan Yue" />
+
+
+<title>TDEseq</title>
+
+<script src="site_libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+
+
+
+<link rel="stylesheet" href="test_files/style.css" type="text/css" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<section class="page-header">
+<h1 class="title toc-ignore project-name">TDEseq</h1>
+<h4 class="author project-author">Fan Yue</h4>
+<h4 class="date project-date">2023/7/24</h4>
+</section>
+
+
+
+<section class="main-content">
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>TDEseq is implemented as an open source R package for detecting genes with temporal dynamic expression patterns in time-series scRNA-seq transcriptomic studies. TDEseq models the relationship between log normalized data and the corresponding time points through constrained additive mixed model and can detect the DE genes as well as its temporal dynamic pattern simultaneously.</p>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<pre><code>library(devtools)
+install_github(&quot;fanyue322/TDEseq&quot;)</code></pre>
+</div>
+<div id="usage" class="section level2">
+<h2>Usage</h2>
+<p>TDEseq starts with the normalized gene expression scRNA-seq data and the corresponding time points.</p>
+<div id="application-on-mouse-liver-development-data" class="section level3">
+<h3>Application on mouse liver development data</h3>
+<pre><code>library(Seurat)
+library(TDEseq)</code></pre>
+</div>
+<div id="loading-data" class="section level3">
+<h3>Loading data</h3>
+<p>We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://drive.google.com/file/d/1354UjYPgx492l8rxjPvW8UB0LRPjD0tR/view?usp=sharing">here</a>.</p>
+<pre><code>load(&#39;GSE90047.rda&#39;)
+time=seurat@meta.data$stage
+expData=seurat@assays$RNA@data</code></pre>
+</div>
+<div id="detecting-temporal-de-genes-through-tdeseq" class="section level3">
+<h3>Detecting temporal DE genes through TDEseq</h3>
+<p>TDEseq takes the normalized data and time points as inputs, and output the p-value and shape information for each gene.</p>
+<pre><code>res=TDEseq(expData,time,LMM=FALSE)</code></pre>
+<p>By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for the cell-cell relatedness information within an identical individual, which can be set by <code>LMM</code> argument, e.g. :</p>
+<pre><code>group=seurat@meta.data$orig.ident
+res=TDEseq(expData,time,group=group,LMM=TRUE)</code></pre>
+</div>
+<div id="including-covariates" class="section level3">
+<h3>Including covariates</h3>
+<p>TDEseq also supports the inclusion of covariates in DE analysis. For example, age, sex, etc.</p>
+<pre><code>res=TDEseq(expData,time,group=group,zmat=pseudotime,LMM=TRUE)</code></pre>
+</div>
+<div id="parameter-settings" class="section level3">
+<h3>Parameter settings</h3>
+<p>In <code>TDEseq()</code>, besides the default parameters, users can also set other parameters as below to filter genes or cells:</p>
+<p><code>logFC_threshold</code>: Limit testing to genes which show the maximum on average X-fold difference (log-scale) between any two time points. Default is 0.0.</p>
+<p><code>pct</code>: Only test genes that are detected in a minimum fraction of pct cells. Default is 0.1.</p>
+<p><code>threshold</code>: Only return markers that have an FDR(BY adjusted) &lt; return.thresh. Default is 0.05.</p>
+<p><code>max_cells_per_ident</code>: Down sample each identity class to a max number. Default is no downsampling.</p>
+<p><code>min_cells_per_timepoints</code>:Minimum number of cells in one of the time points.</p>
+<p><code>LMM</code>:Denotes which methods to use. Default is FALSE(Linear TDEseq). Set <code>LMM=TRUE</code> to perform Mixed TDEseq.</p>
+</div>
+</div>
+</section>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

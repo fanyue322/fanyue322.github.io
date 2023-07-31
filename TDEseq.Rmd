@@ -22,27 +22,54 @@ TDEseq starts with the normalized gene expression scRNA-seq data and the corresp
 
 ### Application on mouse liver development data
 ```
-library(Seurat)
 library(TDEseq)
 ```
 ### Loading data
 We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from [here]( https://drive.google.com/file/d/1354UjYPgx492l8rxjPvW8UB0LRPjD0tR/view?usp=sharing).
 ```
 load('GSE90047.rda')
-time=seurat@meta.data$stage
+metadata=seurat@meta.data[,c(3,4)]
 expData=seurat@assays$RNA@data
 ```
 ### Detecting temporal DE genes through TDEseq
-TDEseq takes the normalized data and time points as inputs, and output the p-value and shape information for each gene.
+TDEseq takes the normalized data and a meta data as inputs, and output the p-value and shape information for each gene.
+The gene expression data format:
+
+|      | E10.5D_1_01| E10.5D_1_02| E10.5D_1_03| E10.5D_1_04| E10.5D_1_05| E10.5D_1_06|
+|:-----|-----------:|-----------:|-----------:|-----------:|-----------:|-----------:|
+|Gnai3 |   1.2575920|   1.3618800|   1.0647014|   1.0578996|   1.4092147|   1.1380617|
+|Cdc45 |   1.0757164|   0.2382423|   0.9187661|   0.9054553|   0.3632458|   0.7534112|
+|H19   |   2.0985043|   2.1759738|   1.8616150|   1.6786874|   1.5646516|   1.6727125|
+|Scml2 |   0.0000000|   0.0000000|   0.1631383|   0.0000000|   0.0000000|   0.2138798|
+|Apoh  |   0.0308504|   0.0092337|   0.1028170|   0.0086277|   0.0351299|   0.0252298|
+|Narf  |   0.3709296|   0.7995276|   0.2663387|   0.4411944|   0.2089655|   0.0000000|
+
+The meta data should contain the information of time points/stage for each cells.
+
+|            | stage|group  |
+|:-----------|-----:|:------|
+|E10.5D_1_01 |  10.5|E10.5D |
+|E10.5D_1_02 |  10.5|E10.5D |
+|E10.5D_1_03 |  10.5|E10.5D |
+|E10.5D_1_04 |  10.5|E10.5D |
+|E10.5D_1_05 |  10.5|E10.5D |
+|E10.5D_1_06 |  10.5|E10.5D |
+
+Then, TDEseq analysis can be performed as follows:
 ```
+time=metadata$stage
 res=TDEseq(expData,time,LMM=FALSE)
 ```
+The output format for TDEseq are:
+
+
 
 By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for the cell-cell relatedness information within an identical individual, which can be set by `LMM` argument, e.g. : 
 ```
-group=seurat@meta.data$orig.ident
+group=metadata$group
 res=TDEseq(expData,time,group=group,LMM=TRUE)
 ```
+In this case the group information for each cell is required. The group information represents the batch structure of the scRNA-seq data. 
 
 ### Including covariates
 TDEseq also supports the inclusion of covariates in DE analysis. For example, age, sex, etc.
@@ -64,6 +91,38 @@ In `TDEseq()`, besides the default parameters, users can also set other paramete
 `min_cells_per_timepoints`:Minimum number of cells in one of the time points. 
 
 `LMM`:Denotes which methods to use. Default is FALSE(Linear TDEseq). Set `LMM=TRUE` to perform Mixed TDEseq.
+
+### Association of gene expression with time points
+The exploration of the data analysis consist of checking whether gene expression is associated with time points and the corresponding pattern. This can be interpreted as testing whether the average gene expression is significantly changing along time points with a specific pattern.
+
+|gene  | increasing.pvalue| decreasing.pvalue| convex.pvalue| concave.pvalue| pval| padj|    aic.inc|   aic.dec|   aic.cov|  aic.con|SignificantDE |pattern   | ChangePoint|
+|:-----|-----------------:|-----------------:|-------------:|--------------:|----:|----:|----------:|---------:|---------:|--------:|:-------------|:---------|-----------:|
+|Apoh  |              0.00|              0.81|     0.0563112|      0.6699999|    0|    0|  518.56329| 1211.3285|  529.5136| 533.9445|Yes           |Growth    |          NA|
+|Ccnd2 |              0.86|              0.00|     0.0000000|      0.7599999|    0|    0|  618.50895|  357.5597|  363.9423| 409.1350|Yes           |Recession |          NA|
+|Pemt  |              0.00|              0.76|     0.0000000|      0.7100000|    0|    0| -202.52977|  570.8639| -200.4116| 431.1143|Yes           |Growth    |          NA|
+|Haao  |              0.00|              0.84|     0.0234969|      0.0252611|    0|    0|   94.26462|  462.7439|  122.3448| 122.6517|Yes           |Growth    |          NA|
+
+Here, `increasing.pvalue`,`decreasing.pvalue`,`convex.pvalue`,`concave.pvalue` are the p-values after testing whether gene expression is changing with a growth, recession, trough or peak pattern. 
+
+`pval` is the p-value after Chuachy combination rule, and `padj` is the adjusted p-values after BY-correction. 
+
+`aic.inc`,`aic.dec`,`aic.cov`, `aic.con` are the corresponding AIC score. TDEseq determines the `pattern` of each gene according to the AIC score, and `ChangePoint` represents the time points that gene expression trend changes(only exists for trough or peak genes).
+
+### Visualization
+Here, we present the visualization of global expression patterns via a heatmap. We base this analysis on a classification of temporal differentially expressed genes according to the corresponding patterns. The function `PatternHeatmap` takes an output object of the class TDEseq. The output of `PatternHeatmap` is a object of the class ComplexHeatmap which can be plotted with `print()`. To performed `PatternHeatmap`, please first install ComplexHeatmap, Seurat and ggplot2 packages. 
+
+#### Parameter settings
+
+`obj`: The results of TDEseq analysis
+
+`features`: Genes to be shown in heatmap. Default is NULL.
+
+`features.show`: Genes to be annotated in heatmap.
+
+`features.num`: Number of genes to be shown for each patterns. Default is 50.
+
+`cols`: Color of the heatmap. Default is c("navy", "white", "firebrick3").
+
 
 
 
