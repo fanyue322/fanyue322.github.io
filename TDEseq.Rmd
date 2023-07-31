@@ -60,8 +60,6 @@ Then, TDEseq analysis can be performed as follows:
 time=metadata$stage
 res=TDEseq(expData,time,LMM=FALSE)
 ```
-The output format for TDEseq are:
-
 
 
 By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for the cell-cell relatedness information within an identical individual, which can be set by `LMM` argument, e.g. : 

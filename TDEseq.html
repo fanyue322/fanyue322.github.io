@@ -183,7 +183,6 @@ expData=seurat@assays$RNA@data</code></pre>
 <p>Then, TDEseq analysis can be performed as follows:</p>
 <pre><code>time=metadata$stage
 res=TDEseq(expData,time,LMM=FALSE)</code></pre>
-<p>The output format for TDEseq are:</p>
 <p>By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for the cell-cell relatedness information within an identical individual, which can be set by <code>LMM</code> argument, e.g. :</p>
 <pre><code>group=metadata$group
 res=TDEseq(expData,time,group=group,LMM=TRUE)</code></pre>
