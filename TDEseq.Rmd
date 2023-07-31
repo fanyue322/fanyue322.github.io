@@ -123,6 +123,5 @@ Here, we present the visualization of global expression patterns via a heatmap. 
 
 `cols`: Color of the heatmap. Default is c("navy", "white", "firebrick3").
 
-
-
+![](PatternHeatmap_example.png)
 
