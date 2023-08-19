@@ -37,38 +37,39 @@
 <section class="page-header">
 <h1 class="title toc-ignore project-name">TDEseq</h1>
 <h4 class="author project-author">Fan Yue</h4>
-<h4 class="date project-date">2023/7/24</h4>
+<h4 class="date project-date">2023/8/19</h4>
 </section>
 
 
 
 <section class="main-content">
 <div id="overview" class="section level2">
-<h2>Overview</h2>
-<p>TDEseq is implemented as an open source R package for detecting genes with temporal dynamic expression patterns in time-series scRNA-seq transcriptomic studies. TDEseq models the relationship between log normalized data and the corresponding time points through constrained additive mixed model and can detect the DE genes as well as its temporal dynamic pattern simultaneously.</p>
+<h2>1. Overview</h2>
+<p>TDEseq is implemented as an open source R package for detecting genes with temporal dynamic expression patterns in time-series scRNA-seq transcriptomic studies. TDEseq primarily builds upon the linear additive mixed model (LAMM) framework, with a random effect term to account for correlated samples in time-resolved or time-course scRNA-seq studies. In this model, we typically introduce the quadratic I-splines and cubic C-splines as basis functions, which facilitate the detection of four potential temporal gene expression patterns, i.e., growth, recession, peak, and trough. This vignette will illustrate some uses and visulization of TDEseq. <img src="workflowweb.png" /></p>
 </div>
 <div id="installation" class="section level2">
-<h2>Installation</h2>
+<h2>2. Installation</h2>
+<p>TDEseq is implemented as an R package, which can be installed from GitHub.</p>
 <pre><code>library(devtools)
 install_github(&quot;fanyue322/TDEseq&quot;)</code></pre>
 </div>
 <div id="usage" class="section level2">
-<h2>Usage</h2>
+<h2>3. Usage</h2>
 <p>TDEseq starts with the normalized gene expression scRNA-seq data and the corresponding time points.</p>
 <div id="application-on-mouse-liver-development-data" class="section level3">
 <h3>Application on mouse liver development data</h3>
-<pre><code>library(TDEseq)</code></pre>
-</div>
-<div id="loading-data" class="section level3">
-<h3>Loading data</h3>
 <p>We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://drive.google.com/file/d/1354UjYPgx492l8rxjPvW8UB0LRPjD0tR/view?usp=sharing">here</a>.</p>
-<pre><code>load(&#39;GSE90047.rda&#39;)
+<pre><code>library(TDEseq)
+load(&#39;GSE90047.rda&#39;)
 metadata=seurat@meta.data[,c(3,4)]
 expData=seurat@assays$RNA@data</code></pre>
 </div>
 <div id="detecting-temporal-de-genes-through-tdeseq" class="section level3">
 <h3>Detecting temporal DE genes through TDEseq</h3>
-<p>TDEseq takes the normalized data and a meta data as inputs, and output the p-value and shape information for each gene. The gene expression data format:</p>
+<p>To run TDEseq on scRNA-seq data, a user should consider the minimal parameter set for the wrapper function <code>TDEseq</code>:</p>
+<p>· expData（normalized scRNA-seq data)</p>
+<p>· meta （a dataframe contained time points and individual information)</p>
+<p>TDEseq takes the normalized data and a meta data as inputs, and output the p-value and pattern information for each gene. The gene expression data format:</p>
 <table>
 <thead>
 <tr class="header">
@@ -180,10 +181,11 @@ expData=seurat@assays$RNA@data</code></pre>
 </tr>
 </tbody>
 </table>
-<p>Then, TDEseq analysis can be performed as follows:</p>
+<p>Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:</p>
 <pre><code>time=metadata$stage
 res=TDEseq(expData,time,LMM=FALSE)</code></pre>
-<p>By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for the cell-cell relatedness information within an identical individual, which can be set by <code>LMM</code> argument, e.g. :</p>
+<p>The differential expression results can be accessed as a data frame in the output object via <a href="mailto:res@dfTDEseqResults" class="email">res@dfTDEseqResults</a>.</p>
+<p>By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled seperately. This variable imposing the batch structure on the expression observations is called “group” in the meta data table. By accounting for batch effects in TDEseq, we turn on the <code>LMM</code> argument, e.g. :</p>
 <pre><code>group=metadata$group
 res=TDEseq(expData,time,group=group,LMM=TRUE)</code></pre>
 <p>In this case the group information for each cell is required. The group information represents the batch structure of the scRNA-seq data.</p>
@@ -312,18 +314,24 @@ res=TDEseq(expData,time,group=group,LMM=TRUE)</code></pre>
 <p><code>pval</code> is the p-value after Chuachy combination rule, and <code>padj</code> is the adjusted p-values after BY-correction.</p>
 <p><code>aic.inc</code>,<code>aic.dec</code>,<code>aic.cov</code>, <code>aic.con</code> are the corresponding AIC score. TDEseq determines the <code>pattern</code> of each gene according to the AIC score, and <code>ChangePoint</code> represents the time points that gene expression trend changes(only exists for trough or peak genes).</p>
 </div>
-<div id="visualization" class="section level3">
-<h3>Visualization</h3>
-<p>Here, we present the visualization of global expression patterns via a heatmap. We base this analysis on a classification of temporal differentially expressed genes according to the corresponding patterns. The function <code>PatternHeatmap</code> takes an output object of the class TDEseq. The output of <code>PatternHeatmap</code> is a object of the class ComplexHeatmap which can be plotted with <code>print()</code>. To performed <code>PatternHeatmap</code>, please first install ComplexHeatmap, Seurat and ggplot2 packages.</p>
-<div id="parameter-settings-1" class="section level4">
-<h4>Parameter settings</h4>
+</div>
+<div id="visualization" class="section level2">
+<h2>4. Visualization</h2>
+<p>Here, we present the visualization of global expression patterns via a heatmap. We base this analysis on a classification of temporal differentially expressed genes according to the corresponding patterns. The function <code>PatternHeatmap</code> takes an output object of the class TDEseq. The output of <code>PatternHeatmap</code> is a object of the class ComplexHeatmap which can be plotted with <code>print()</code>. To performed <code>PatternHeatmap</code>, please first install ComplexHeatmap, Seurat and ggplot2 packages. To perform visulization function included in TDEseq, please library these packages first.</p>
+<pre><code>suppressPackageStartupMessages({
+  library(&quot;Seurat&quot;)
+  library(&quot;ggplot2&quot;)
+  library(&quot;ComplexHeatmap&quot;)
+  library(&quot;circlize&quot;)
+  })</code></pre>
+<div id="parameter-settings-1" class="section level3">
+<h3>Parameter settings</h3>
 <p><code>obj</code>: The results of TDEseq analysis</p>
 <p><code>features</code>: Genes to be shown in heatmap. Default is NULL.</p>
 <p><code>features.show</code>: Genes to be annotated in heatmap.</p>
 <p><code>features.num</code>: Number of genes to be shown for each patterns. Default is 50.</p>
 <p><code>cols</code>: Color of the heatmap. Default is c(“navy”, “white”, “firebrick3”).</p>
 <p><img src="PatternHeatmap_example.png" /></p>
-</div>
 </div>
 </div>
 </section>
