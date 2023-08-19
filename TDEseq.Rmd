@@ -1,38 +1,46 @@
 ---
 title: "TDEseq"
 author: "Fan Yue"
-date: "2023/7/24"
-output: html_document
- # prettydoc::html_pretty:
- #   theme: cayman
- #   highlight: github
+date: "2023/8/19"
+  output: 
+    BiocStyle::html_document
+  vignette: >
+    %\VignetteIndexEntry{Vignette Title}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}  
 ---
 
-## Overview
-TDEseq is implemented as an open source R package for detecting genes with temporal dynamic expression patterns in time-series scRNA-seq transcriptomic studies. TDEseq models the relationship between log normalized data and the corresponding time points through constrained additive mixed model and can detect the DE genes as well as its temporal dynamic pattern simultaneously.
+## 1. Overview
+TDEseq is implemented as an open source R package for detecting genes with temporal dynamic expression patterns in time-series scRNA-seq transcriptomic studies. TDEseq primarily builds upon the linear additive mixed model (LAMM) framework, with a random effect term to account for correlated samples in time-resolved or time-course scRNA-seq studies. In this model, we typically introduce the quadratic I-splines and cubic C-splines as basis functions, which facilitate the detection of four potential temporal gene expression patterns, i.e., growth, recession, peak, and trough. This vignette will illustrate some uses and visulization of TDEseq.
+![](workflowweb.png)
 
-## Installation
+
+## 2. Installation
+TDEseq is implemented as an R package, which can be installed from GitHub.
 ```
 library(devtools)
 install_github("fanyue322/TDEseq")
 ```
 
-## Usage
-TDEseq starts with the normalized gene expression scRNA-seq data and the corresponding time points.
+## 3. Usage
+TDEseq starts with the normalized gene expression scRNA-seq data and the corresponding time points. 
 
 ### Application on mouse liver development data
-```
-library(TDEseq)
-```
-### Loading data
 We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from [here]( https://drive.google.com/file/d/1354UjYPgx492l8rxjPvW8UB0LRPjD0tR/view?usp=sharing).
 ```
+library(TDEseq)
 load('GSE90047.rda')
 metadata=seurat@meta.data[,c(3,4)]
 expData=seurat@assays$RNA@data
 ```
 ### Detecting temporal DE genes through TDEseq
-TDEseq takes the normalized data and a meta data as inputs, and output the p-value and shape information for each gene.
+To run TDEseq on scRNA-seq data, a user should consider the minimal parameter set for the wrapper function `TDEseq`:
+
+· expData（normalized scRNA-seq data)
+
+· meta （a dataframe contained time points and individual information)
+
+TDEseq takes the normalized data and a meta data as inputs, and output the p-value and pattern information for each gene.
 The gene expression data format:
 
 |      | E10.5D_1_01| E10.5D_1_02| E10.5D_1_03| E10.5D_1_04| E10.5D_1_05| E10.5D_1_06|
@@ -55,14 +63,14 @@ The meta data should contain the information of time points/stage for each cells
 |E10.5D_1_05 |  10.5|E10.5D |
 |E10.5D_1_06 |  10.5|E10.5D |
 
-Then, TDEseq analysis can be performed as follows:
+Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:
 ```
 time=metadata$stage
 res=TDEseq(expData,time,LMM=FALSE)
 ```
+The differential expression results can be accessed as a data frame in the output object via res@dfTDEseqResults. 
 
-
-By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for the cell-cell relatedness information within an identical individual, which can be set by `LMM` argument, e.g. : 
+By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled seperately. This variable imposing the batch structure on the expression observations is called "group" in the meta data table. By accounting for batch effects in TDEseq, we turn on the `LMM` argument, e.g. : 
 ```
 group=metadata$group
 res=TDEseq(expData,time,group=group,LMM=TRUE)
@@ -106,10 +114,18 @@ Here, `increasing.pvalue`,`decreasing.pvalue`,`convex.pvalue`,`concave.pvalue` a
 
 `aic.inc`,`aic.dec`,`aic.cov`, `aic.con` are the corresponding AIC score. TDEseq determines the `pattern` of each gene according to the AIC score, and `ChangePoint` represents the time points that gene expression trend changes(only exists for trough or peak genes).
 
-### Visualization
+## 4. Visualization
 Here, we present the visualization of global expression patterns via a heatmap. We base this analysis on a classification of temporal differentially expressed genes according to the corresponding patterns. The function `PatternHeatmap` takes an output object of the class TDEseq. The output of `PatternHeatmap` is a object of the class ComplexHeatmap which can be plotted with `print()`. To performed `PatternHeatmap`, please first install ComplexHeatmap, Seurat and ggplot2 packages. 
-
-#### Parameter settings
+To perform visulization function included in TDEseq, please library these packages first.
+```
+suppressPackageStartupMessages({
+  library("Seurat")
+  library("ggplot2")
+  library("ComplexHeatmap")
+  library("circlize")
+  })
+```
+### Parameter settings
 
 `obj`: The results of TDEseq analysis
 
