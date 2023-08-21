@@ -334,6 +334,13 @@ res=TDEseq(expData,time,group=group,LMM=TRUE)</code></pre>
 <p><img src="PatternHeatmap_example.png" /></p>
 </div>
 </div>
+<div id="pseudo-cell" class="section level2">
+<h2>5. Pseudo-cell</h2>
+<p>When the number of cells is large, generating pseudo-cells by aggregating a predifined number of cells (default is 20) will greatly reduce the computational burden. Pseudo-cell procedure also reduces the data sparsity, which improves the fit to the normal distribution, as the assumption for TDEseq.</p>
+<p>To perform TDEseq in Pseudo-cell mode, we set <code>pseudocell</code> argument as 20, e.g. :</p>
+<pre><code>group=metadata$group
+res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)</code></pre>
+</div>
 </section>
 
 
