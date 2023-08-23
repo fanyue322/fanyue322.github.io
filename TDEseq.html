@@ -82,11 +82,11 @@ install_github(&quot;fanyue322/TDEseq&quot;)</code></pre>
 <p>TDEseq starts with the normalized gene expression scRNA-seq data and the corresponding time points.</p>
 <div id="application-on-mouse-liver-development-data" class="section level3">
 <h3>Application on mouse liver development data</h3>
-<p>We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://drive.google.com/file/d/1354UjYPgx492l8rxjPvW8UB0LRPjD0tR/view?usp=sharing">here</a>.</p>
+<p>We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo.rda">here</a>.</p>
 <pre><code>library(TDEseq)
-load(&#39;GSE90047.rda&#39;)
-metadata=seurat@meta.data
-expData=seurat@assays$RNA@data</code></pre>
+load(&#39;scRNA-seq_liver_embryo.rda&#39;)
+metadata=meta
+expData=data</code></pre>
 </div>
 <div id="detecting-temporal-de-genes-through-tdeseq" class="section level3">
 <h3>Detecting temporal DE genes through TDEseq</h3>
@@ -179,45 +179,47 @@ expData=seurat@assays$RNA@data</code></pre>
 <td align="left">E10.5D</td>
 </tr>
 <tr class="even">
-<td align="left">E10.5D_1_02</td>
-<td align="right">10.5</td>
-<td align="left">E10.5D</td>
+<td align="left">E11.5D_1_06</td>
+<td align="right">11.5</td>
+<td align="left">E11.5D</td>
 </tr>
 <tr class="odd">
-<td align="left">E10.5D_1_03</td>
-<td align="right">10.5</td>
-<td align="left">E10.5D</td>
+<td align="left">E11.5E_2_10</td>
+<td align="right">11.5</td>
+<td align="left">E11.5E</td>
 </tr>
 <tr class="even">
-<td align="left">E10.5D_1_04</td>
-<td align="right">10.5</td>
-<td align="left">E10.5D</td>
+<td align="left">E13.5E_2_01</td>
+<td align="right">13.5</td>
+<td align="left">E13.5E</td>
 </tr>
 <tr class="odd">
-<td align="left">E10.5D_1_05</td>
-<td align="right">10.5</td>
-<td align="left">E10.5D</td>
+<td align="left">E14.5E_1_13</td>
+<td align="right">14.5</td>
+<td align="left">E14.5E</td>
 </tr>
 <tr class="even">
-<td align="left">E10.5D_1_06</td>
-<td align="right">10.5</td>
-<td align="left">E10.5D</td>
+<td align="left">E15.5D_4_12</td>
+<td align="right">15.5</td>
+<td align="left">E15.5D</td>
 </tr>
 </tbody>
 </table>
-<p>Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:</p>
-<pre><code>res=TDEseq(expData,metadata,LMM=FALSE)</code></pre>
-<p>or run TDEseq with Seurat Object directly, with group and stage information are included in <a href="mailto:seurat@meta.data" class="email">seurat@meta.data</a>.</p>
-<pre><code>res=TDEseq(seurat)</code></pre>
+<p>Where the “stage column contains the time points/stage for each cell (embryo day in this example) and the”group" column contains the individual information (index of the mice in this example). Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:</p>
+<pre><code>res=TDEseq(X=expData,meta=metadata,LMM=FALSE)</code></pre>
+<p>or run TDEseq with Seurat Object directly, with group and stage information are included in <a href="mailto:seurat@meta.data" class="email">seurat@meta.data</a>. An example seurat object file can be downloaded from <a href="https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda">here</a>.</p>
+<pre><code>load(&quot;scRNA-seq_liver_embryo_seuobj.rda&quot;)
+library(Seurat)
+res=TDEseq(seurat)</code></pre>
 <p>The differential expression results can be accessed as a data frame in the output object via <a href="mailto:res@dfTDEseqResults" class="email">res@dfTDEseqResults</a>.</p>
 <p>By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled separately. This variable imposing the batch structure on the expression observations is called “group” in the meta data table. By accounting for batch effects in TDEseq, we turn on the <code>LMM</code> argument, e.g. :</p>
-<pre><code>res=TDEseq(expData,metadata,LMM=TRUE)</code></pre>
+<pre><code>res=TDEseq(X=expData,meta=metadata,LMM=TRUE)</code></pre>
 <p>In this case the group information for each cell is required. The group information represents the batch structure of the scRNA-seq data.</p>
 </div>
 <div id="including-covariates" class="section level3">
 <h3>Including covariates</h3>
 <p>TDEseq also supports the inclusion of covariates in DE analysis. For example, age, sex, etc.</p>
-<pre><code>res=TDEseq(expData,time,group=group,zmat=pseudotime,LMM=TRUE)</code></pre>
+<pre><code>res=TDEseq(expData,time,group=group,zmat=cov,LMM=TRUE)</code></pre>
 </div>
 <div id="parameter-settings" class="section level3">
 <h3>Parameter settings</h3>
