@@ -149,8 +149,8 @@ res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)
 ## 6. Apply TDEseq on real scRNA-seq data
 All scRNA-seq data sets used in our originial paper are available on [here](https://zenodo.org/record/8271795). For more time series scRNA-seq data, please refer [TEDD database](http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/)
 
-## 7. Web framework of TDEseq
-TDEseq is developed within a web framework with and hosted at [our server](http://81.69.241.14/). This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly. 
+## 7. Web server of TDEseq
+TDEseq is also developed within a web framework with and hosted at [our server](http://81.69.241.14/). This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly. 
 
 ### How to register a new user
 To register a new user follow these steps:
@@ -161,6 +161,14 @@ To register a new user follow these steps:
 3. You will receive a text message from our server with a verification code. Enter the code to complete the account verification.
 
 ### Usage
+Our web version of TDEseq are organized into three steps: Upload data, Parameter settings and Visualization.
+
+**A. Upload data.** The user can choose to upload normalised scRNA-seq gene expression data (genes by cells) in csv format as well as a metadata including time points and group information (specifying colnames as "Time" and "Group" and rownames as cell barcodes), or R data format including Expdata and Metadata formatted as the csv file. 
+
+**B. Parameter settings.** The web version of TDEseq provides identical parameter settings to the R package version of TDEseq. Users can select appropriate parameters according to the parameter description. 
+
+**C. Visualization.** The web version of TDEseq provides two approaches for user to visualise the analysis results. For the `heatmap`, the temporal expression genes are diveded into 4 types according to their pattern (growth, recession, peak and trough) and the corresponding heatmap is displayed with the clustered genes (As the temporal distinct patterns figure in our original paper). Users can select the genes of interest or the top 50 genes for each pattern ranked by p-values to display for the heatmap. Another approach is the `line`, which shows the smooth line estimated by TDEseq across all time points.
+
 
 
 

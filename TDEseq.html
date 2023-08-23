@@ -58,7 +58,7 @@
 </ul></li>
 <li><a href="#pseudo-cell">5. Pseudo-cell</a></li>
 <li><a href="#apply-tdeseq-on-real-scrna-seq-data">6. Apply TDEseq on real scRNA-seq data</a></li>
-<li><a href="#web-framework-of-tdeseq">7. Web framework of TDEseq</a><ul>
+<li><a href="#web-server-of-tdeseq">7. Web server of TDEseq</a><ul>
 <li><a href="#how-to-register-a-new-user">How to register a new user</a></li>
 <li><a href="#usage-1">Usage</a></li>
 </ul></li>
@@ -369,9 +369,9 @@ res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)</code></pre>
 <h2>6. Apply TDEseq on real scRNA-seq data</h2>
 <p>All scRNA-seq data sets used in our originial paper are available on <a href="https://zenodo.org/record/8271795">here</a>. For more time series scRNA-seq data, please refer <a href="http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/">TEDD database</a></p>
 </div>
-<div id="web-framework-of-tdeseq" class="section level2">
-<h2>7. Web framework of TDEseq</h2>
-<p>TDEseq is developed within a web framework with and hosted at <a href="http://81.69.241.14/">our server</a>. This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly.</p>
+<div id="web-server-of-tdeseq" class="section level2">
+<h2>7. Web server of TDEseq</h2>
+<p>TDEseq is also developed within a web framework with and hosted at <a href="http://81.69.241.14/">our server</a>. This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly.</p>
 <div id="how-to-register-a-new-user" class="section level3">
 <h3>How to register a new user</h3>
 <p>To register a new user follow these steps:</p>
@@ -383,6 +383,10 @@ res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)</code></pre>
 </div>
 <div id="usage-1" class="section level3">
 <h3>Usage</h3>
+<p>Our web version of TDEseq are organized into three steps: Upload data, Parameter settings and Visualization.</p>
+<p><strong>A. Upload data.</strong> The user can choose to upload normalised scRNA-seq gene expression data (genes by cells) in csv format as well as a metadata including time points and group information (specifying colnames as “Time” and “Group” and rownames as cell barcodes), or R data format including Expdata and Metadata formatted as the csv file.</p>
+<p><strong>B. Parameter settings.</strong> The web version of TDEseq provides identical parameter settings to the R package version of TDEseq. Users can select appropriate parameters according to the parameter description.</p>
+<p><strong>C. Visualization.</strong> The web version of TDEseq provides two approaches for user to visualise the analysis results. For the <code>heatmap</code>, the temporal expression genes are diveded into 4 types according to their pattern (growth, recession, peak and trough) and the corresponding heatmap is displayed with the clustered genes (As the temporal distinct patterns figure in our original paper). Users can select the genes of interest or the top 50 genes for each pattern ranked by p-values to display for the heatmap. Another approach is the <code>line</code>, which shows the smooth line estimated by TDEseq across all time points.</p>
 </div>
 </div>
 </section>
