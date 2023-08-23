@@ -228,6 +228,7 @@ expData=seurat@assays$RNA@data</code></pre>
 <p><code>max_cells_per_ident</code>: Down sample each identity class to a max number. Default is no downsampling.</p>
 <p><code>min_cells_per_timepoints</code>:Minimum number of cells in one of the time points.</p>
 <p><code>LMM</code>:Denotes which methods to use. Default is FALSE(Linear TDEseq). Set <code>LMM=TRUE</code> to perform Mixed TDEseq.</p>
+<p><code>pseudocell</code>: Whether perform pseudo cell strategy or not. Default is NULL. Alternatively, users can set pseudocell as an integer(i.e. 20) to perform pseudocell analysis. Note that to perform pseudocell strategy, raw counts matrix instead of normalized gene expression data is required.</p>
 </div>
 <div id="association-of-gene-expression-with-time-points" class="section level3">
 <h3>Association of gene expression with time points</h3>
@@ -385,7 +386,14 @@ res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)</code></pre>
 <h3>Usage</h3>
 <p>Our web version of TDEseq are organized into three steps: Upload data, Parameter settings and Visualization.</p>
 <p><strong>A. Upload data.</strong> The user can choose to upload normalised scRNA-seq gene expression data (genes by cells) in csv format as well as a metadata including time points and group information (specifying colnames as “Time” and “Group” and rownames as cell barcodes), or R data format including Expdata and Metadata formatted as the csv file.</p>
-<p><strong>B. Parameter settings.</strong> The web version of TDEseq provides identical parameter settings to the R package version of TDEseq. Users can select appropriate parameters according to the parameter description.</p>
+<p><strong>B. Parameter settings.</strong> The web version of TDEseq provides identical parameter settings to the R package version of TDEseq. Users can select appropriate parameters according to the parameter description. The detailed description of each patameters is as follow:</p>
+<p><code>logFC_threshold</code>: Limit testing to genes which show the maximum on average X-fold difference (log-scale) between any two time points. Default is 0.0.</p>
+<p><code>pct</code>: Only test genes that are detected in a minimum fraction of pct cells. Default is 0.1.</p>
+<p><code>threshold</code>: Only return markers that have an FDR(BY adjusted) &lt; return.thresh. Default is 0.05.</p>
+<p><code>max_cells_per_ident</code>: Down sample each identity class to a max number. Default is no downsampling.</p>
+<p><code>min_cells_per_timepoints</code>:Minimum number of cells in one of the time points.</p>
+<p><code>LMM</code>:Denotes which methods to use. Default is FALSE(Linear TDEseq). Set <code>LMM=TRUE</code> to perform Mixed TDEseq.</p>
+<p><code>pseudocell</code>: Whether perform pseudo cell strategy or not. Default is NULL. Alternatively, users can set pseudocell as an integer(i.e. 20) to perform pseudocell analysis. Note that to perform pseudocell strategy, raw counts matrix instead of normalized gene expression data is required.</p>
 <p><strong>C. Visualization.</strong> The web version of TDEseq provides two approaches for user to visualise the analysis results. For the <code>heatmap</code>, the temporal expression genes are diveded into 4 types according to their pattern (growth, recession, peak and trough) and the corresponding heatmap is displayed with the clustered genes (As the temporal distinct patterns figure in our original paper). Users can select the genes of interest or the top 50 genes for each pattern ranked by p-values to display for the heatmap. Another approach is the <code>line</code>, which shows the smooth line estimated by TDEseq across all time points.</p>
 </div>
 </div>
