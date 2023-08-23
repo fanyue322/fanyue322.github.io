@@ -65,7 +65,7 @@ Here, we present a Linear TDEseq without batch effects controlling. TDEseq analy
 ```
 res=TDEseq(expData,metadata,LMM=FALSE)
 ```
-or run TDEseq with Seurat Object directly
+or run TDEseq with Seurat Object directly, with group and stage information are included in seurat@meta.data.
 ```
 res=TDEseq(seurat)
 ```
@@ -148,7 +148,8 @@ group=metadata$group
 res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)
 ```
 
-## 6. Web version of TDEseq
+## 6. Apply TDEseq on real scRNA-seq data
+All scRNA-seq data sets used in our originial paper are available on [here](https://zenodo.org/record/8271795). For more time series scRNA-seq data, please refer [TEDD database](http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/)
 
 
 
