@@ -58,6 +58,10 @@
 </ul></li>
 <li><a href="#pseudo-cell">5. Pseudo-cell</a></li>
 <li><a href="#apply-tdeseq-on-real-scrna-seq-data">6. Apply TDEseq on real scRNA-seq data</a></li>
+<li><a href="#web-framework-of-tdeseq">7. Web framework of TDEseq</a><ul>
+<li><a href="#how-to-register-a-new-user">How to register a new user</a></li>
+<li><a href="#usage-1">Usage</a></li>
+</ul></li>
 </ul>
 </div>
 </div>
@@ -364,6 +368,22 @@ res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)</code></pre>
 <div id="apply-tdeseq-on-real-scrna-seq-data" class="section level2">
 <h2>6. Apply TDEseq on real scRNA-seq data</h2>
 <p>All scRNA-seq data sets used in our originial paper are available on <a href="https://zenodo.org/record/8271795">here</a>. For more time series scRNA-seq data, please refer <a href="http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/">TEDD database</a></p>
+</div>
+<div id="web-framework-of-tdeseq" class="section level2">
+<h2>7. Web framework of TDEseq</h2>
+<p>TDEseq is developed within a web framework with and hosted at <a href="http://81.69.241.14/">our server</a>. This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly.</p>
+<div id="how-to-register-a-new-user" class="section level3">
+<h3>How to register a new user</h3>
+<p>To register a new user follow these steps:</p>
+<ol style="list-style-type: decimal">
+<li>Visit <a href="http://81.69.241.14/">our server</a> and click Register button</li>
+<li>The sign-up form will appear. Follow the directions by entering the required information. Select “Role” as TDEseq. <img src="Web_step1.png" /></li>
+<li>You will receive a text message from our server with a verification code. Enter the code to complete the account verification.</li>
+</ol>
+</div>
+<div id="usage-1" class="section level3">
+<h3>Usage</h3>
+</div>
 </div>
 </section>
 
