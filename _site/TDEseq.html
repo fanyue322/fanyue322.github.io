@@ -41,6 +41,26 @@
 </section>
 
 
+<div id="TOC" class="toc">
+<div class="toc-box">
+<ul>
+<li><a href="#overview">1. Overview</a></li>
+<li><a href="#installation">2. Installation</a></li>
+<li><a href="#usage">3. Usage</a><ul>
+<li><a href="#application-on-mouse-liver-development-data">Application on mouse liver development data</a></li>
+<li><a href="#detecting-temporal-de-genes-through-tdeseq">Detecting temporal DE genes through TDEseq</a></li>
+<li><a href="#including-covariates">Including covariates</a></li>
+<li><a href="#parameter-settings">Parameter settings</a></li>
+<li><a href="#association-of-gene-expression-with-time-points">Association of gene expression with time points</a></li>
+</ul></li>
+<li><a href="#visualization">4. Visualization</a><ul>
+<li><a href="#parameter-settings-1">Parameter settings</a></li>
+</ul></li>
+<li><a href="#pseudo-cell">5. Pseudo-cell</a></li>
+<li><a href="#apply-tdeseq-on-real-scrna-seq-data">6. Apply TDEseq on real scRNA-seq data</a></li>
+</ul>
+</div>
+</div>
 
 <section class="main-content">
 <div id="overview" class="section level2">
@@ -183,7 +203,7 @@ expData=seurat@assays$RNA@data</code></pre>
 </table>
 <p>Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:</p>
 <pre><code>res=TDEseq(expData,metadata,LMM=FALSE)</code></pre>
-<p>or run TDEseq with Seurat Object directly</p>
+<p>or run TDEseq with Seurat Object directly, with group and stage information are included in <a href="mailto:seurat@meta.data" class="email">seurat@meta.data</a>.</p>
 <pre><code>res=TDEseq(seurat)</code></pre>
 <p>The differential expression results can be accessed as a data frame in the output object via <a href="mailto:res@dfTDEseqResults" class="email">res@dfTDEseqResults</a>.</p>
 <p>By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled separately. This variable imposing the batch structure on the expression observations is called “group” in the meta data table. By accounting for batch effects in TDEseq, we turn on the <code>LMM</code> argument, e.g. :</p>
@@ -341,8 +361,9 @@ expData=seurat@assays$RNA@data</code></pre>
 <pre><code>group=metadata$group
 res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)</code></pre>
 </div>
-<div id="web-version-of-tdeseq" class="section level2">
-<h2>6. Web version of TDEseq</h2>
+<div id="apply-tdeseq-on-real-scrna-seq-data" class="section level2">
+<h2>6. Apply TDEseq on real scRNA-seq data</h2>
+<p>All scRNA-seq data sets used in our originial paper are available on <a href="https://zenodo.org/record/8271795">here</a>. For more time series scRNA-seq data, please refer <a href="http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/">TEDD database</a></p>
 </div>
 </section>
 

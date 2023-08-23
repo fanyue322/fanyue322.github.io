@@ -13,6 +13,7 @@ output:
   prettydoc::html_pretty:
     theme: cayman
     highlight: github
+    toc: true
     include:
     after_body: footer.html
     css: styles.css
