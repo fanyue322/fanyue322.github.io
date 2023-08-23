@@ -10,7 +10,7 @@ output: html_document
 
 ## 1. Overview
 TDEseq is implemented as an open source R package for detecting genes with temporal dynamic expression patterns in time-series scRNA-seq transcriptomic studies. TDEseq primarily builds upon the linear additive mixed model (LAMM) framework, with a random effect term to account for correlated samples in time-resolved or time-course scRNA-seq studies. In this model, we typically introduce the quadratic I-splines and cubic C-splines as basis functions, which facilitate the detection of four potential temporal gene expression patterns, i.e., growth, recession, peak, and trough. This vignette will illustrate some uses and visulization of TDEseq.
-![](workflowweb.png)
+![](workflow_web.png)
 
 
 ## 2. Installation
@@ -28,7 +28,7 @@ We used a sample mouse liver development during embyro process scRNA-seq data as
 ```
 library(TDEseq)
 load('GSE90047.rda')
-metadata=seurat@meta.data[,c(3,4)]
+metadata=seurat@meta.data
 expData=seurat@assays$RNA@data
 ```
 ### Detecting temporal DE genes through TDEseq
@@ -63,15 +63,17 @@ The meta data should contain the information of time points/stage for each cells
 
 Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:
 ```
-time=metadata$stage
-res=TDEseq(expData,time,LMM=FALSE)
+res=TDEseq(expData,metadata,LMM=FALSE)
+```
+or run TDEseq with Seurat Object directly
+```
+res=TDEseq(seurat)
 ```
 The differential expression results can be accessed as a data frame in the output object via res@dfTDEseqResults. 
 
-By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled seperately. This variable imposing the batch structure on the expression observations is called "group" in the meta data table. By accounting for batch effects in TDEseq, we turn on the `LMM` argument, e.g. : 
+By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled separately. This variable imposing the batch structure on the expression observations is called "group" in the meta data table. By accounting for batch effects in TDEseq, we turn on the `LMM` argument, e.g. : 
 ```
-group=metadata$group
-res=TDEseq(expData,time,group=group,LMM=TRUE)
+res=TDEseq(expData,metadata,LMM=TRUE)
 ```
 In this case the group information for each cell is required. The group information represents the batch structure of the scRNA-seq data. 
 
@@ -146,6 +148,7 @@ group=metadata$group
 res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)
 ```
 
+## 6. Web version of TDEseq
 
 
 
