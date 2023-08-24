@@ -364,9 +364,9 @@ res=TDEseq(seurat)</code></pre>
 <div id="pseudo-cell" class="section level2">
 <h2>5. Pseudo-cell</h2>
 <p>When the number of cells is large, generating pseudo-cells by aggregating a predifined number of cells (default is 20) will greatly reduce the computational burden. Pseudo-cell procedure also reduces the data sparsity, which improves the fit to the normal distribution, as the assumption for TDEseq.</p>
-<p>To perform TDEseq in Pseudo-cell mode, we set <code>pseudocell</code> argument as 20, e.g. :</p>
-<pre><code>group=metadata$group
-res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)</code></pre>
+<p>To perform TDEseq in Pseudo-cell mode, we set <code>pseudocell</code> argument as 20. An example data to perform <code>pseudocell</code> mode is also available on <a href="https://zenodo.org/record/8278207/files/scRNA-seq_COVID19_counts.rda">here</a>.</p>
+<pre><code>load(&quot;scRNA-seq_COVID19_counts.rda&quot;)
+res=TDEseq(X=counts,meta=meta,LMM=TRUE,pseudocell=20)</code></pre>
 </div>
 <div id="apply-tdeseq-on-real-scrna-seq-data" class="section level2">
 <h2>6. Apply TDEseq on real scRNA-seq data</h2>
