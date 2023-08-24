@@ -152,7 +152,7 @@ res=TDEseq(expData,time,group=group,LMM=TRUE,pseudocell=20)
 ```
 
 ## 6. Apply TDEseq on real scRNA-seq data
-All scRNA-seq data sets used in our originial paper are available on [here](https://zenodo.org/record/8271795). For more time series scRNA-seq data, please refer [TEDD database](http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/)
+All scRNA-seq data sets used in our originial paper are available on [here](https://zenodo.org/record/8276740). For more time series scRNA-seq data, please refer [TEDD database](http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/)
 
 ## 7. Web server of TDEseq
 TDEseq is also developed within a web framework with and hosted at [our server](http://81.69.241.14/). This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly. 
