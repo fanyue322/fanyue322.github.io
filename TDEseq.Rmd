@@ -140,6 +140,11 @@ suppressPackageStartupMessages({
 
 `cols`: Color of the heatmap. Default is c("navy", "white", "firebrick3").
 
+```
+p<-PatternHeatmap(res,features.show=c("Cse1l","Cdk4","Cbx5","Sardh","Birc5","G3bp1","Pah"))
+print(p)
+```
+
 ![](PatternHeatmap_example.png)
 
 ## 5. Pseudo-cell  
