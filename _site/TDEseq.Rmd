@@ -3,14 +3,12 @@ title: "TDEseq"
 author: "Fan Yue"
 date: "2023/8/19"
 output: html_document
- # prettydoc::html_pretty:
- #   theme: cayman
- #   highlight: github
 ---
+
 
 ## 1. Overview
 TDEseq is implemented as an open source R package for detecting genes with temporal dynamic expression patterns in time-series scRNA-seq transcriptomic studies. TDEseq primarily builds upon the linear additive mixed model (LAMM) framework, with a random effect term to account for correlated samples in time-resolved or time-course scRNA-seq studies. In this model, we typically introduce the quadratic I-splines and cubic C-splines as basis functions, which facilitate the detection of four potential temporal gene expression patterns, i.e., growth, recession, peak, and trough. This vignette will illustrate some uses and visulization of TDEseq.
-![](workflowweb.png)
+![](workflow_web.png)
 
 
 ## 2. Installation
@@ -24,12 +22,12 @@ install_github("fanyue322/TDEseq")
 TDEseq starts with the normalized gene expression scRNA-seq data and the corresponding time points. 
 
 ### Application on mouse liver development data
-We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from [here]( https://drive.google.com/file/d/1354UjYPgx492l8rxjPvW8UB0LRPjD0tR/view?usp=sharing).
+We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from [here](https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo.rda).
 ```
 library(TDEseq)
-load('GSE90047.rda')
-metadata=seurat@meta.data[,c(3,4)]
-expData=seurat@assays$RNA@data
+load('scRNA-seq_liver_embryo.rda')
+metadata=meta
+expData=data
 ```
 ### Detecting temporal DE genes through TDEseq
 To run TDEseq on scRNA-seq data, a user should consider the minimal parameter set for the wrapper function `TDEseq`:
@@ -55,30 +53,35 @@ The meta data should contain the information of time points/stage for each cells
 |            | stage|group  |
 |:-----------|-----:|:------|
 |E10.5D_1_01 |  10.5|E10.5D |
-|E10.5D_1_02 |  10.5|E10.5D |
-|E10.5D_1_03 |  10.5|E10.5D |
-|E10.5D_1_04 |  10.5|E10.5D |
-|E10.5D_1_05 |  10.5|E10.5D |
-|E10.5D_1_06 |  10.5|E10.5D |
+|E11.5D_1_06 |  11.5|E11.5D |
+|E11.5E_2_10 |  11.5|E11.5E |
+|E13.5E_2_01 |  13.5|E13.5E |
+|E14.5E_1_13 |  14.5|E14.5E |
+|E15.5D_4_12 |  15.5|E15.5D |
 
+Where the "stage column contains the time points/stage for each cell (embryo day in this example) and the "group" column contains the individual information (index of the mice in this example).
 Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:
 ```
-time=metadata$stage
-res=TDEseq(expData,time,LMM=FALSE)
+res=TDEseq(X=expData,meta=metadata,LMM=FALSE)
+```
+or run TDEseq with Seurat Object directly, with group and stage information are included in seurat@meta.data, i.e. the seurat@meta.data should contain "group" column and "stage" column. An example seurat object file can be downloaded from [here](https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda).
+```
+load("scRNA-seq_liver_embryo_seuobj.rda")
+library(Seurat)
+res=TDEseq(seurat)
 ```
 The differential expression results can be accessed as a data frame in the output object via res@dfTDEseqResults. 
 
-By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled seperately. This variable imposing the batch structure on the expression observations is called "group" in the meta data table. By accounting for batch effects in TDEseq, we turn on the `LMM` argument, e.g. : 
+By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled separately. This variable imposing the batch structure on the expression observations is called "group" in the meta data table. By accounting for batch effects in TDEseq, we turn on the `LMM` argument, e.g. : 
 ```
-group=metadata$group
-res=TDEseq(expData,time,group=group,LMM=TRUE)
+res=TDEseq(X=expData,meta=metadata,LMM=TRUE)
 ```
 In this case the group information for each cell is required. The group information represents the batch structure of the scRNA-seq data. 
 
 ### Including covariates
 TDEseq also supports the inclusion of covariates in DE analysis. For example, age, sex, etc.
 ```
-res=TDEseq(expData,time,group=group,zmat=pseudotime,LMM=TRUE)
+res=TDEseq(X=expData,meta=meta,zmat=cov,LMM=TRUE)
 ```
 
 ### Parameter settings
@@ -95,6 +98,8 @@ In `TDEseq()`, besides the default parameters, users can also set other paramete
 `min_cells_per_timepoints`:Minimum number of cells in one of the time points. 
 
 `LMM`:Denotes which methods to use. Default is FALSE(Linear TDEseq). Set `LMM=TRUE` to perform Mixed TDEseq.
+
+`pseudocell`: Whether perform pseudo cell strategy or not. Default is NULL. Alternatively, users can set pseudocell as an integer(i.e. 20) to perform pseudocell analysis. Note that to perform pseudocell strategy, raw counts matrix instead of normalized gene expression data is required.
 
 ### Association of gene expression with time points
 The exploration of the data analysis consist of checking whether gene expression is associated with time points and the corresponding pattern. This can be interpreted as testing whether the average gene expression is significantly changing along time points with a specific pattern.
@@ -135,5 +140,61 @@ suppressPackageStartupMessages({
 
 `cols`: Color of the heatmap. Default is c("navy", "white", "firebrick3").
 
+```
+p<-PatternHeatmap(res,features.show=c("Cse1l","Cdk4","Cbx5","Sardh","Birc5","G3bp1","Pah"))
+print(p)
+```
+
 ![](PatternHeatmap_example.png)
+
+## 5. Pseudo-cell  
+When the number of cells is large, generating pseudo-cells by aggregating a predifined number of cells (default is 20) will greatly reduce the computational burden. Pseudo-cell procedure also reduces the data sparsity, which improves the fit to the normal distribution, as the assumption for TDEseq. 
+
+To perform TDEseq in Pseudo-cell mode,  we set `pseudocell` argument as 20. An example data to perform `pseudocell` mode is also available on [here](https://zenodo.org/record/8278207/files/scRNA-seq_COVID19_counts.rda). 
+```
+load("scRNA-seq_COVID19_counts.rda")
+res=TDEseq(X=counts,meta=meta,LMM=TRUE,pseudocell=20)
+```
+
+## 6. Apply TDEseq on real scRNA-seq data
+All scRNA-seq data sets used in our originial paper are available on [here](https://zenodo.org/record/8276740). For more time series scRNA-seq data, please refer [TEDD database](http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/)
+
+## 7. Web server of TDEseq
+TDEseq is also developed within a web framework with and hosted at [our server](http://81.69.241.14/). This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly. 
+
+### How to register a new user
+To register a new user follow these steps:
+
+1. Visit [our server](http://81.69.241.14/) and click Register button
+2. The sign-up form will appear. Follow the directions by entering the required information. Select "Role" as TDEseq.
+![](Web_step1.png)
+3. You will receive a text message from our server with a verification code. Enter the code to complete the account verification.
+
+### Usage
+Our web version of TDEseq are organized into three steps: Upload data, Parameter settings and Visualization.
+
+**A. Upload data.** The user can choose to upload normalised scRNA-seq gene expression data (genes by cells) in csv format as well as a metadata including time points and group information (specifying colnames as "Time" and "Group" and rownames as cell barcodes), or R data format including Expdata and Metadata formatted as the csv file. 
+
+**B. Parameter settings.** The web version of TDEseq provides identical parameter settings to the R package version of TDEseq. Users can select appropriate parameters according to the parameter description. The detailed description of each patameters is as follow:
+
+`logFC_threshold`: Limit testing to genes which show the maximum on average X-fold difference (log-scale) between any two time points. Default is 0.0.
+
+`pct`: Only test genes that are detected in a minimum fraction of pct cells. Default is 0.1.
+
+`threshold`: Only return markers that have an FDR(BY adjusted) < return.thresh. Default is 0.05.
+
+`max_cells_per_ident`: Down sample each identity class to a max number. Default is no downsampling. 
+
+`min_cells_per_timepoints`:Minimum number of cells in one of the time points. 
+
+`LMM`:Denotes which methods to use. Default is FALSE(Linear TDEseq). Set `LMM=TRUE` to perform Mixed TDEseq.
+
+`pseudocell`: Whether perform pseudo cell strategy or not. Default is NULL. Alternatively, users can set pseudocell as an integer(i.e. 20) to perform pseudocell analysis. Note that to perform pseudocell strategy, raw counts matrix instead of normalized gene expression data is required.
+
+**C. Visualization.** The web version of TDEseq provides two approaches for user to visualise the analysis results. For the `heatmap`, the temporal expression genes are diveded into 4 types according to their pattern (growth, recession, peak and trough) and the corresponding heatmap is displayed with the clustered genes (As the temporal distinct patterns figure in our original paper). Users can select the genes of interest or the top 50 genes for each pattern ranked by p-values to display for the heatmap. Another approach is the `line`, which shows the smooth line estimated by TDEseq across all time points.
+
+
+
+
+
 
