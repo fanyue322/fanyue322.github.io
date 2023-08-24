@@ -207,7 +207,7 @@ expData=data</code></pre>
 </table>
 <p>Where the “stage column contains the time points/stage for each cell (embryo day in this example) and the”group" column contains the individual information (index of the mice in this example). Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:</p>
 <pre><code>res=TDEseq(X=expData,meta=metadata,LMM=FALSE)</code></pre>
-<p>or run TDEseq with Seurat Object directly, with group and stage information are included in <a href="mailto:seurat@meta.data" class="email">seurat@meta.data</a>. An example seurat object file can be downloaded from <a href="https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda">here</a>.</p>
+<p>or run TDEseq with Seurat Object directly, with group and stage information are included in <a href="mailto:seurat@meta.data" class="email">seurat@meta.data</a>, i.e. the <a href="mailto:seurat@meta.data" class="email">seurat@meta.data</a> should contain “group” column and “stage” column. An example seurat object file can be downloaded from <a href="https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda">here</a>.</p>
 <pre><code>load(&quot;scRNA-seq_liver_embryo_seuobj.rda&quot;)
 library(Seurat)
 res=TDEseq(seurat)</code></pre>
@@ -219,7 +219,7 @@ res=TDEseq(seurat)</code></pre>
 <div id="including-covariates" class="section level3">
 <h3>Including covariates</h3>
 <p>TDEseq also supports the inclusion of covariates in DE analysis. For example, age, sex, etc.</p>
-<pre><code>res=TDEseq(expData,time,group=group,zmat=cov,LMM=TRUE)</code></pre>
+<pre><code>res=TDEseq(X=expData,meta=meta,zmat=cov,LMM=TRUE)</code></pre>
 </div>
 <div id="parameter-settings" class="section level3">
 <h3>Parameter settings</h3>

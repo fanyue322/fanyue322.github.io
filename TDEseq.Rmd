@@ -64,7 +64,7 @@ Here, we present a Linear TDEseq without batch effects controlling. TDEseq analy
 ```
 res=TDEseq(X=expData,meta=metadata,LMM=FALSE)
 ```
-or run TDEseq with Seurat Object directly, with group and stage information are included in seurat@meta.data. An example seurat object file can be downloaded from [here](https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda).
+or run TDEseq with Seurat Object directly, with group and stage information are included in seurat@meta.data, i.e. the seurat@meta.data should contain "group" column and "stage" column. An example seurat object file can be downloaded from [here](https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda).
 ```
 load("scRNA-seq_liver_embryo_seuobj.rda")
 library(Seurat)
@@ -81,7 +81,7 @@ In this case the group information for each cell is required. The group informat
 ### Including covariates
 TDEseq also supports the inclusion of covariates in DE analysis. For example, age, sex, etc.
 ```
-res=TDEseq(expData,time,group=group,zmat=cov,LMM=TRUE)
+res=TDEseq(X=expData,meta=meta,zmat=cov,LMM=TRUE)
 ```
 
 ### Parameter settings
