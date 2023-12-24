@@ -61,50 +61,67 @@ The meta data should contain the information of time points/stage for each cells
 
 Where the "stage column contains the time points/stage for each cell (embryo day in this example) and the "group" column contains the individual information (index of the mice in this example).
 Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows:
+#### Create TDEseqObject 
+Users can create TDEseqObject from gene expression data
 ```
-res=TDEseq(X=expData,meta=metadata,LMM=FALSE)
+seurat<-Seurat::NormalizeData(seurat)
+counts=Seurat::GetAssayData(seurat,'counts')
+data=Seurat::GetAssayData(seurat,'data)
+tde <- CreateTDEseqObject(counts = counts,data=data,meta.data=seurat@meta.data)
 ```
-or run TDEseq with Seurat Object directly, with group and stage information are included in seurat@meta.data, i.e. the seurat@meta.data should contain "group" column and "stage" column. An example seurat object file can be downloaded from [here](https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda).
+Or from Seurat object directly
 ```
-load("scRNA-seq_liver_embryo_seuobj.rda")
-library(Seurat)
-res=TDEseq(seurat)
+tde <- CreateTDEseqObject(counts = seurat)
 ```
-The differential expression results can be accessed as a data frame in the output object via res@dfTDEseqResults. 
+#### Run TDEseq analysis
+```
+tde_method = "cell"
+tde_param = list(sample.var = "group",
+                 stage.var = "stage",
+                 fit.model = "lm",
+                 tde.thr = 0.05,
+				         num.core=5)
+tde <- tdeseq(object = tde, tde.method = tde_method, tde.param=tde_param)
+```
+An example seurat object file can be downloaded from [here](https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda).
 
-By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to cells are derived from different individuals or handled separately. This variable imposing the batch structure on the expression observations is called "group" in the meta data table. By accounting for batch effects in TDEseq, we turn on the `LMM` argument, e.g. : 
-```
-res=TDEseq(X=expData,meta=metadata,LMM=TRUE)
-```
-In this case the group information for each cell is required. The group information represents the batch structure of the scRNA-seq data. 
+The temporal differential expression results can be accessed as a data frame in the output object via `result<-GetTDEseqAssayData(tde,'tde')`. 
 
-### Including covariates
-TDEseq also supports the inclusion of covariates in DE analysis. For example, age, sex, etc.
+By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to sample-level variation. This variable imposing the batch structure on the expression observations and can be specified by setting `sample.var="group"`. By accounting for batch effects in TDEseq, we set the `fit.model='lmm'`, e.g. : 
 ```
-res=TDEseq(X=expData,meta=meta,zmat=cov,LMM=TRUE)
+tde_method = "cell"
+tde_param = list(sample.var = "group",
+                 stage.var = "stage",
+                 fit.model = "lmm",
+				         num.core=10)
+tde <- tdeseq(object = tde, tde.method = tde_method, tde.param=tde_param)
 ```
+In this case the group information for each cell is required. The group information represents the sample-level variation of the scRNA-seq data. 
 
 ### Parameter settings
 In `TDEseq()`, besides the default parameters, users can also set other parameters as below to filter genes or cells:
-
-`logFC_threshold`: Limit testing to genes which show the maximum on average X-fold difference (log-scale) between any two time points. Default is 0.0.
-
-`pct`: Only test genes that are detected in a minimum fraction of pct cells. Default is 0.1.
-
-`threshold`: Only return markers that have an FDR(BY adjusted) < return.thresh. Default is 0.05.
-
-`max_cells_per_ident`: Down sample each identity class to a max number. Default is no downsampling. 
-
-`min_cells_per_timepoints`:Minimum number of cells in one of the time points. 
-
-`LMM`:Denotes which methods to use. Default is FALSE(Linear TDEseq). Set `LMM=TRUE` to perform Mixed TDEseq.
-
-`pseudocell`: Whether perform pseudo cell strategy or not. Default is NULL. Alternatively, users can set pseudocell as an integer(i.e. 20) to perform pseudocell analysis. Note that to perform pseudocell strategy, raw counts matrix instead of normalized gene expression data is required.
+```
+tde_param = list(sample.var = "batch",
+                 stage.var = "stage",
+                 fit.model = "lm",
+                 pct = 0.1,
+                 tde.thr = 0.05,
+                 lfc = 0.1,
+                 max.gcells = Inf,
+                 min.tcells = 3,
+		             num.core=10)
+tde <- tdeseq(object = tde, tde.param=tde_param)
+```
+1. Remove time points with too few cells by setting `min.tcells`. Here, time points with less than 3 cells will be removed.
+2. Filter genes that are only expressed in a few cells by setting `pct`. Here, genes with more than 90% of zero counts will be filtered out.
+3. Filter genes that show small average X-fold difference (log-scale) between any two time points by setting `lfc`. Here, we limit testing to genes which show at least 0.1-fold difference between any two time points.
+4. Downsample cells by setting `max.gcells`. If max.gcells is smaller than the given number of cells in a sample, the down-sampling will be active. Here, we do not perform downsampling by setting `max.gcells=Inf`.
+5. Perform parallel computing with 10 core by setting `num.core=10`.
 
 ### Association of gene expression with time points
 The exploration of the data analysis consist of checking whether gene expression is associated with time points and the corresponding pattern. This can be interpreted as testing whether the average gene expression is significantly changing along time points with a specific pattern.
 
-|gene  | increasing.pvalue| decreasing.pvalue| convex.pvalue| concave.pvalue| pval| padj|    aic.inc|   aic.dec|   aic.cov|  aic.con|SignificantDE |pattern   | ChangePoint|
+|gene  | increasing.pvalue| decreasing.pvalue| convex.pvalue| concave.pvalue| pvalue| padj|    aic.inc|   aic.dec|   aic.cov|  aic.con|SignificantDE |pattern   | ChangePoint|
 |:-----|-----------------:|-----------------:|-------------:|--------------:|----:|----:|----------:|---------:|---------:|--------:|:-------------|:---------|-----------:|
 |Apoh  |              0.00|              0.81|     0.0563112|      0.6699999|    0|    0|  518.56329| 1211.3285|  529.5136| 533.9445|Yes           |Growth    |          NA|
 |Ccnd2 |              0.86|              0.00|     0.0000000|      0.7599999|    0|    0|  618.50895|  357.5597|  363.9423| 409.1350|Yes           |Recession |          NA|
@@ -132,6 +149,8 @@ suppressPackageStartupMessages({
 
 `obj`: The results of TDEseq analysis
 
+`stage.id': The column name of time points in metadata.
+
 `features`: Genes to be shown in heatmap. Default is NULL.
 
 `features.show`: Genes to be annotated in heatmap.
@@ -141,25 +160,17 @@ suppressPackageStartupMessages({
 `cols`: Color of the heatmap. Default is c("navy", "white", "firebrick3").
 
 ```
-p<-PatternHeatmap(res,features.show=c("Cse1l","Cdk4","Cbx5","Sardh","Birc5","G3bp1","Pah"))
+p<-PatternHeatmap(obj=tde,stage.id='stage',features.show=c("Cse1l","Cdk4","Cbx5","Sardh","Birc5","G3bp1","Pah"))
 print(p)
 ```
 
 ![](PatternHeatmap_example.png)
 
-## 5. Pseudo-cell  
-When the number of cells is large, generating pseudo-cells by aggregating a predifined number of cells (default is 20) will greatly reduce the computational burden. Pseudo-cell procedure also reduces the data sparsity, which improves the fit to the normal distribution, as the assumption for TDEseq. 
 
-To perform TDEseq in Pseudo-cell mode,  we set `pseudocell` argument as 20. An example data to perform `pseudocell` mode is also available on [here](https://zenodo.org/record/8278207/files/scRNA-seq_COVID19_counts.rda). 
-```
-load("scRNA-seq_COVID19_counts.rda")
-res=TDEseq(X=counts,meta=meta,LMM=TRUE,pseudocell=20)
-```
-
-## 6. Apply TDEseq on real scRNA-seq data
+## 5. Apply TDEseq on real scRNA-seq data
 All scRNA-seq data sets used in our originial paper are available on [here](https://zenodo.org/record/8276740). For more time series scRNA-seq data, please refer [TEDD database](http://tedd.obg.cuhk.edu.hk/frontend/dist/index.html#/)
 
-## 7. Web server of TDEseq
+## 6. Web server of TDEseq
 TDEseq is also developed within a web framework with and hosted at [our server](http://81.69.241.14/). This web framework minimizes inherent dependencies on specific hardware, software packages and libraries and file-system attributes. Through this interface, users can provide a gene expression matrix in csv format and a metadata in csv format and run TDEseq analysis directly. 
 
 ### How to register a new user
