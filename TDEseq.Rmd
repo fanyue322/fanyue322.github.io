@@ -26,15 +26,16 @@ We used a sample mouse liver development during embyro process scRNA-seq data as
 ```
 library(TDEseq)
 load('scRNA-seq_liver_embryo.rda')
-metadata=meta
-expData=data
+counts<-Seurat::GetAssayData(seurat,'counts')  ##raw counts data
+data.norm<-Seurat::GetAssayData(seurat,'data') ##log normalized data
+meta.data<-seurat@meta.data                    ##metadata
 ```
 ### Detecting temporal DE genes through TDEseq
 To run TDEseq on scRNA-seq data, a user should consider the minimal parameter set for the wrapper function `TDEseq`:
 
-· expData（normalized scRNA-seq data)
+· data.norm（normalized scRNA-seq data)
 
-· meta （a dataframe contained time points and individual information)
+· meta.data （a dataframe contained time points and individual information)
 
 TDEseq takes the normalized data and a meta data as inputs, and output the p-value and pattern information for each gene.
 The gene expression data format:
@@ -64,10 +65,7 @@ Here, we present a Linear TDEseq without batch effects controlling. TDEseq analy
 #### Create TDEseqObject 
 Users can create TDEseqObject from gene expression data
 ```
-seurat<-Seurat::NormalizeData(seurat)
-counts=Seurat::GetAssayData(seurat,'counts')
-data=Seurat::GetAssayData(seurat,'data)
-tde <- CreateTDEseqObject(counts = counts,data=data,meta.data=seurat@meta.data)
+tde <- CreateTDEseqObject(counts = counts,data=data.norm,meta.data=meta.data)
 ```
 Or from Seurat object directly
 ```
@@ -75,8 +73,8 @@ tde <- CreateTDEseqObject(counts = seurat)
 ```
 #### Run TDEseq analysis
 ```
-tde_method = "cell"
-tde_param = list(sample.var = "group",
+tde_method <- "cell"
+tde_param <- list(sample.var = "group",
                  stage.var = "stage",
                  fit.model = "lm",
                  tde.thr = 0.05,
@@ -89,8 +87,8 @@ The temporal differential expression results can be accessed as a data frame in 
 
 By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to sample-level variation. This variable imposing the batch structure on the expression observations and can be specified by setting `sample.var="group"`. By accounting for batch effects in TDEseq, we set the `fit.model='lmm'`, e.g. : 
 ```
-tde_method = "cell"
-tde_param = list(sample.var = "group",
+tde_method <- "cell"
+tde_param <- list(sample.var = "group",
                  stage.var = "stage",
                  fit.model = "lmm",
 				         num.core=10)
@@ -101,7 +99,7 @@ In this case the group information for each cell is required. The group informat
 ### Parameter settings
 In `TDEseq()`, besides the default parameters, users can also set other parameters as below to filter genes or cells:
 ```
-tde_param = list(sample.var = "batch",
+tde_param <- list(sample.var = "batch",
                  stage.var = "stage",
                  fit.model = "lm",
                  pct = 0.1,
