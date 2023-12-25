@@ -26,8 +26,8 @@ We used a sample mouse liver development during embyro process scRNA-seq data as
 ```
 library(TDEseq)
 load('scRNA-seq_liver_embryo.rda')
-counts<-Seurat::GetAssayData(seurat,'counts')  ##raw counts data
-data.norm<-Seurat::GetAssayData(seurat,'data') ##log normalized data
+counts<-Seurat::GetAssayData(seurat,slot ='counts')  ##raw counts data
+data.norm<-Seurat::GetAssayData(seurat,slot ='data') ##log normalized data
 meta.data<-seurat@meta.data                    ##metadata
 ```
 ### Detecting temporal DE genes through TDEseq

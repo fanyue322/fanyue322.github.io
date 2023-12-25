@@ -83,8 +83,8 @@ install_github(&quot;fanyue322/TDEseq&quot;)</code></pre>
 <p>We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo.rda">here</a>.</p>
 <pre><code>library(TDEseq)
 load(&#39;scRNA-seq_liver_embryo.rda&#39;)
-counts&lt;-Seurat::GetAssayData(seurat,&#39;counts&#39;)  ##raw counts data
-data.norm&lt;-Seurat::GetAssayData(seurat,&#39;data&#39;) ##log normalized data
+counts&lt;-Seurat::GetAssayData(seurat,slot =&#39;counts&#39;)  ##raw counts data
+data.norm&lt;-Seurat::GetAssayData(seurat,slot =&#39;data&#39;) ##log normalized data
 meta.data&lt;-seurat@meta.data                    ##metadata</code></pre>
 </div>
 <div id="detecting-temporal-de-genes-through-tdeseq" class="section level3">

@@ -37,7 +37,7 @@
 <section class="page-header">
 <h1 class="title toc-ignore project-name">TDEseq</h1>
 <h4 class="author project-author">Fan Yue</h4>
-<h4 class="date project-date">2023/8/19</h4>
+<h4 class="date project-date">2023/12/24</h4>
 </section>
 
 
@@ -83,14 +83,15 @@ install_github(&quot;fanyue322/TDEseq&quot;)</code></pre>
 <p>We used a sample mouse liver development during embyro process scRNA-seq data as a main example which contains expression measurement of 14,226 genes on 345 cells. This dataset can be downloaded from their original study GSE90047. We also saved the processed data that we used in our examples in RData format, which can be downloaded from <a href="https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo.rda">here</a>.</p>
 <pre><code>library(TDEseq)
 load(&#39;scRNA-seq_liver_embryo.rda&#39;)
-metadata=meta
-expData=data</code></pre>
+counts&lt;-Seurat::GetAssayData(seurat,slot =&#39;counts&#39;)  ##raw counts data
+data.norm&lt;-Seurat::GetAssayData(seurat,slot =&#39;data&#39;) ##log normalized data
+meta.data&lt;-seurat@meta.data                    ##metadata</code></pre>
 </div>
 <div id="detecting-temporal-de-genes-through-tdeseq" class="section level3">
 <h3>Detecting temporal DE genes through TDEseq</h3>
 <p>To run TDEseq on scRNA-seq data, a user should consider the minimal parameter set for the wrapper function <code>TDEseq</code>:</p>
-<p>· expData（normalized scRNA-seq data)</p>
-<p>· meta （a dataframe contained time points and individual information)</p>
+<p>· data.norm（normalized scRNA-seq data)</p>
+<p>· meta.data （a dataframe contained time points and individual information)</p>
 <p>TDEseq takes the normalized data and a meta data as inputs, and output the p-value and pattern information for each gene. The gene expression data format:</p>
 <table>
 <thead>
@@ -204,16 +205,13 @@ expData=data</code></pre>
 </tbody>
 </table>
 <p>Where the “stage column contains the time points/stage for each cell (embryo day in this example) and the”group" column contains the individual information (index of the mice in this example). Here, we present a Linear TDEseq without batch effects controlling. TDEseq analysis can be performed as follows: #### Create TDEseqObject Users can create TDEseqObject from gene expression data</p>
-<pre><code>seurat&lt;-Seurat::NormalizeData(seurat)
-counts=Seurat::GetAssayData(seurat,&#39;counts&#39;)
-data=Seurat::GetAssayData(seurat,&#39;data)
-tde &lt;- CreateTDEseqObject(counts = counts,data=data,meta.data=seurat@meta.data)</code></pre>
+<pre><code>tde &lt;- CreateTDEseqObject(counts = counts,data=data.norm,meta.data=meta.data)</code></pre>
 <p>Or from Seurat object directly</p>
 <pre><code>tde &lt;- CreateTDEseqObject(counts = seurat)</code></pre>
 <div id="run-tdeseq-analysis" class="section level4">
 <h4>Run TDEseq analysis</h4>
-<pre><code>tde_method = &quot;cell&quot;
-tde_param = list(sample.var = &quot;group&quot;,
+<pre><code>tde_method &lt;- &quot;cell&quot;
+tde_param &lt;- list(sample.var = &quot;group&quot;,
                  stage.var = &quot;stage&quot;,
                  fit.model = &quot;lm&quot;,
                  tde.thr = 0.05,
@@ -222,8 +220,8 @@ tde &lt;- tdeseq(object = tde, tde.method = tde_method, tde.param=tde_param)</co
 <p>An example seurat object file can be downloaded from <a href="https://zenodo.org/record/8276740/files/scRNA-seq_liver_embryo_seuobj.rda">here</a>.</p>
 <p>The temporal differential expression results can be accessed as a data frame in the output object via <code>result&lt;-GetTDEseqAssayData(tde,'tde')</code>.</p>
 <p>By default, TDEseq uses the Linear version. Alternatively, one can perform the mixed version of TDEseq, which accounts for individual level batch effects, such a batch structure could arise due to sample-level variation. This variable imposing the batch structure on the expression observations and can be specified by setting <code>sample.var="group"</code>. By accounting for batch effects in TDEseq, we set the <code>fit.model='lmm'</code>, e.g. :</p>
-<pre><code>tde_method = &quot;cell&quot;
-tde_param = list(sample.var = &quot;group&quot;,
+<pre><code>tde_method &lt;- &quot;cell&quot;
+tde_param &lt;- list(sample.var = &quot;group&quot;,
                  stage.var = &quot;stage&quot;,
                  fit.model = &quot;lmm&quot;,
                          num.core=10)
@@ -234,7 +232,7 @@ tde &lt;- tdeseq(object = tde, tde.method = tde_method, tde.param=tde_param)</co
 <div id="parameter-settings" class="section level3">
 <h3>Parameter settings</h3>
 <p>In <code>TDEseq()</code>, besides the default parameters, users can also set other parameters as below to filter genes or cells:</p>
-<pre><code>tde_param = list(sample.var = &quot;batch&quot;,
+<pre><code>tde_param &lt;- list(sample.var = &quot;batch&quot;,
                  stage.var = &quot;stage&quot;,
                  fit.model = &quot;lm&quot;,
                  pct = 0.1,
